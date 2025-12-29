@@ -86,6 +86,12 @@ export const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      console.error('Database not connected. State:', mongoose.connection.readyState);
+      return res.status(503).json({ message: 'Database connection error. Please try again.' });
+    }
+
     const user = await userModel.findOne({ email }).select('+password');
     if (!user) {
       return res.status(400).json({ message: 'Invalid email' });
@@ -114,8 +120,8 @@ export const loginUser = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error('Error in loginUser:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error in loginUser:', error.message, error.stack);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };
 
