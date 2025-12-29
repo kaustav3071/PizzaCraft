@@ -1,20 +1,20 @@
-// explore_menu.jsx (Final Fix with Add/Remove and Price Sync)
 import React, { useState, useEffect } from "react";
 import "./explore_menu.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const ExploreMenu = () => {
-    const url =  import.meta.env.VITE_API_URL;
+    const url = import.meta.env.VITE_API_URL;
     const [getAll, setGetAll] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const [itemCounts, setItemCounts] = useState({});
     const [inventory, setInventory] = useState(null);
     const [cart, setCart] = useState([]);
 
     const api = axios.create({
-        baseURL:  import.meta.env.VITE_API_URL,
+        baseURL: import.meta.env.VITE_API_URL,
         timeout: 10000,
     });
 
@@ -23,11 +23,9 @@ const ExploreMenu = () => {
             const response = await axios.get(`${url}/pizza/getallpizzas`);
             if (response.status === 200) {
                 setGetAll(response.data);
-            } else {
-                toast.error("Error fetching pizzas");
             }
         } catch (error) {
-            toast.error("An error occurred while fetching pizzas");
+            toast.error("Failed to load pizzas");
         }
     };
 
@@ -36,13 +34,14 @@ const ExploreMenu = () => {
             const response = await api.get("/inventory");
             setInventory(response.data);
         } catch (error) {
-            toast.error("Failed to load inventory.");
+            console.error("Failed to load inventory");
         }
     };
 
     const fetchCart = async () => {
         try {
             const token = localStorage.getItem("token");
+            if (!token) return;
             const response = await api.get("/user/profile", {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -54,19 +53,23 @@ const ExploreMenu = () => {
             });
             setItemCounts(counts);
         } catch (error) {
-            toast.error("Failed to fetch cart.");
+            console.error("Failed to fetch cart");
         }
     };
 
     const updateCartInBackend = async (updatedCart) => {
         try {
             const token = localStorage.getItem("token");
+            if (!token) {
+                toast.error("Please login to add items to cart");
+                return;
+            }
             const response = await api.put("/user/update_cart", { cartData: updatedCart }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setCart(response.data.cartData);
         } catch (error) {
-            toast.error("Failed to update cart.");
+            toast.error("Failed to update cart");
         }
     };
 
@@ -120,51 +123,89 @@ const ExploreMenu = () => {
         const item = cart.find(p => p.pizzaId === pizzaId);
         if (!item) return;
 
-        const updatedCartItem = {
-            ...item,
-            quantity,
-        };
-
+        const updatedCartItem = { ...item, quantity };
         const newCart = [...cart.filter(p => p.pizzaId !== pizzaId), updatedCartItem];
         setItemCounts(prev => ({ ...prev, [pizzaId]: quantity }));
         updateCartInBackend(newCart);
     };
 
     useEffect(() => {
-        Promise.all([fetchAllPizzas(), fetchInventory(), fetchCart()]);
+        const loadData = async () => {
+            setLoading(true);
+            await Promise.all([fetchAllPizzas(), fetchInventory(), fetchCart()]);
+            setLoading(false);
+        };
+        loadData();
     }, []);
 
+    const totalCartItems = Object.values(itemCounts).reduce((a, b) => a + b, 0);
+
     return (
-        <div className="explore-menu" id="explore-menu">
-            <h1>Explore our Menu</h1>
-            <p className="explore-menu-text">
-                We have a wide variety of pizzas to choose from. Explore our menu and find your favorite!
-            </p>
-            <div className="explore-menu-buttons">
-                <button className="explore-menu-button" onClick={() => navigate("/cart")}>View Cart</button>
-                <button className="explore-menu-button" onClick={() => navigate("/add-inventory")}>Add Inventory</button>
+        <div className="menu-page">
+            {/* Hero Header */}
+            <div className="menu-hero">
+                <div className="menu-hero-content">
+                    <span className="menu-badge">🍕 Fresh & Delicious</span>
+                    <h1>Our Menu</h1>
+                    <p>Handcrafted pizzas made with love, fresh ingredients, and authentic recipes from Italy.</p>
+                    <div className="menu-hero-actions">
+                        <Link to="/cart" className="menu-btn menu-btn--primary">
+                            🛒 View Cart {totalCartItems > 0 && <span className="cart-count">({totalCartItems})</span>}
+                        </Link>
+                        <Link to="/add-inventory" className="menu-btn menu-btn--ghost">
+                            Customize Pizza
+                        </Link>
+                    </div>
+                </div>
             </div>
-            <div className="menu-items">
-                {getAll.length > 0 ? (
-                    getAll.map((pizza) => (
-                        <div className="menu-item" key={pizza._id}>
-                            <img src={`${url}/images/${pizza.image}`} alt={pizza.name} />
-                            <h2 className="menu-name">{pizza.name}</h2>
-                            <p className="menu-description">{pizza.description}</p>
-                            <p className="menu-price">Price: Rs {pizza.price}</p>
-                            {!itemCounts[pizza._id] ? (
-                                <button className="add" onClick={() => handleAddItem(pizza._id)}>Add</button>
-                            ) : (
-                                <div className="pizza-item-counter">
-                                    <button className="remove" onClick={() => handleRemoveItem(pizza._id)}>Remove</button>
-                                    <p className="item-count">{itemCounts[pizza._id]}</p>
-                                    <button className="add" onClick={() => handleAddItem(pizza._id)}>Add</button>
+
+            {/* Menu Content */}
+            <div className="menu-content">
+                {loading ? (
+                    <div className="menu-loading">
+                        <div className="loading-spinner"></div>
+                        <p>Loading delicious pizzas...</p>
+                    </div>
+                ) : getAll.length > 0 ? (
+                    <div className="menu-grid">
+                        {getAll.map((pizza) => (
+                            <div className="pizza-card" key={pizza._id}>
+                                <div className="pizza-card-image">
+                                    <img src={`${url}/images/${pizza.image}`} alt={pizza.name} />
+                                    <div className="pizza-card-overlay">
+                                        <span className="pizza-tag">🔥 Popular</span>
+                                    </div>
                                 </div>
-                            )}
-                        </div>
-                    ))
+                                <div className="pizza-card-content">
+                                    <h3 className="pizza-name">{pizza.name}</h3>
+                                    <p className="pizza-description">{pizza.description}</p>
+                                    <div className="pizza-card-footer">
+                                        <div className="pizza-price">
+                                            <span className="price-label">Price</span>
+                                            <span className="price-value">₹{pizza.price}</span>
+                                        </div>
+                                        {!itemCounts[pizza._id] ? (
+                                            <button className="add-btn" onClick={() => handleAddItem(pizza._id)}>
+                                                + Add
+                                            </button>
+                                        ) : (
+                                            <div className="quantity-control">
+                                                <button className="qty-btn qty-btn--minus" onClick={() => handleRemoveItem(pizza._id)}>−</button>
+                                                <span className="qty-value">{itemCounts[pizza._id]}</span>
+                                                <button className="qty-btn qty-btn--plus" onClick={() => handleAddItem(pizza._id)}>+</button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 ) : (
-                    <p>No pizzas available</p>
+                    <div className="menu-empty">
+                        <span className="empty-icon">🍕</span>
+                        <h3>No pizzas available</h3>
+                        <p>Check back later for our delicious offerings!</p>
+                    </div>
                 )}
             </div>
         </div>

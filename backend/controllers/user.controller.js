@@ -30,7 +30,7 @@ export const registerUser = async (req, res, next) => {
       }
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10); 
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const emailVerificationToken = crypto.randomBytes(32).toString('hex');
 
@@ -46,7 +46,8 @@ export const registerUser = async (req, res, next) => {
 
     await newUser.save();
 
-    const verificationUrl = `https://pizzacraft-backend.onrender.com/user/verify/${emailVerificationToken}`;
+    const backendUrl = process.env.BACKEND_URL;
+    const verificationUrl = `${backendUrl}/user/verify/${emailVerificationToken}`;
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -149,58 +150,58 @@ export const userProfile = async (req, res, next) => {
 };
 
 export const updateCart = async (req, res, next) => {
-    try {
-        const userId = req.user._id;
-        const { cartData } = req.body;
+  try {
+    const userId = req.user._id;
+    const { cartData } = req.body;
 
-        // Fetch inventory to calculate prices
-        const inventory = await mongoose.model('Inventory').findOne();
-        if (!inventory) {
-            return res.status(500).json({ message: 'Inventory not found.' });
-        }
-
-        const updatedCart = cartData.map((item) => {
-            const basePrice = inventory.bases.get(item.base)?.price || 0;
-            const saucePrice = inventory.sauces.get(item.sauce)?.price || 0;
-            const cheesePrice = inventory.cheeses.get(item.cheese)?.price || 0;
-            const veggiesPrice = (item.veggies || []).reduce((total, veggie) => {
-                return total + (inventory.veggies.get(veggie)?.price || 0);
-            }, 0);
-
-            const defaultBasePrice = inventory.bases.get('Regular')?.price || 40;
-            const defaultSaucePrice = inventory.sauces.get('Tomato')?.price || 0;
-            const defaultCheesePrice = inventory.cheeses.get('Mozzarella')?.price || 30;
-            const defaultInventoryCost = defaultBasePrice + defaultSaucePrice + defaultCheesePrice;
-            const isPredefined = !!item.pizzaId;
-            const basePizzaPrice = item.originalPrice || item.price || 0;
-
-            let adjustedPrice = basePizzaPrice;
-
-            if (!isPredefined) {
-                adjustedPrice = basePizzaPrice - defaultInventoryCost + basePrice + saucePrice + cheesePrice + veggiesPrice;
-            }
-
-            return {
-                ...item,
-                price: adjustedPrice,
-                originalPrice: item.originalPrice || item.price || 0,
-            };
-        });
-
-        // Update the user's cart
-        const user = await userModel.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
-
-        user.cartData = updatedCart;
-        await user.save();
-
-        res.status(200).json({ message: 'Cart updated successfully.', cartData: updatedCart });
-    } catch (error) {
-        console.error('Error updating cart:', error.message);
-        res.status(500).json({ message: 'Failed to update cart.', error: error.message });
+    // Fetch inventory to calculate prices
+    const inventory = await mongoose.model('Inventory').findOne();
+    if (!inventory) {
+      return res.status(500).json({ message: 'Inventory not found.' });
     }
+
+    const updatedCart = cartData.map((item) => {
+      const basePrice = inventory.bases.get(item.base)?.price || 0;
+      const saucePrice = inventory.sauces.get(item.sauce)?.price || 0;
+      const cheesePrice = inventory.cheeses.get(item.cheese)?.price || 0;
+      const veggiesPrice = (item.veggies || []).reduce((total, veggie) => {
+        return total + (inventory.veggies.get(veggie)?.price || 0);
+      }, 0);
+
+      const defaultBasePrice = inventory.bases.get('Regular')?.price || 40;
+      const defaultSaucePrice = inventory.sauces.get('Tomato')?.price || 0;
+      const defaultCheesePrice = inventory.cheeses.get('Mozzarella')?.price || 30;
+      const defaultInventoryCost = defaultBasePrice + defaultSaucePrice + defaultCheesePrice;
+      const isPredefined = !!item.pizzaId;
+      const basePizzaPrice = item.originalPrice || item.price || 0;
+
+      let adjustedPrice = basePizzaPrice;
+
+      if (!isPredefined) {
+        adjustedPrice = basePizzaPrice - defaultInventoryCost + basePrice + saucePrice + cheesePrice + veggiesPrice;
+      }
+
+      return {
+        ...item,
+        price: adjustedPrice,
+        originalPrice: item.originalPrice || item.price || 0,
+      };
+    });
+
+    // Update the user's cart
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    user.cartData = updatedCart;
+    await user.save();
+
+    res.status(200).json({ message: 'Cart updated successfully.', cartData: updatedCart });
+  } catch (error) {
+    console.error('Error updating cart:', error.message);
+    res.status(500).json({ message: 'Failed to update cart.', error: error.message });
+  }
 };
 
 export const GetAllUsers = async (req, res, next) => {
@@ -213,7 +214,7 @@ export const GetAllUsers = async (req, res, next) => {
   }
 };
 
-export const GetUserById = async (req, res, next) => { 
+export const GetUserById = async (req, res, next) => {
   const { id } = req.params;
   try {
     const user = await userModel.findById(id).select('-password -emailVerificationToken -__v');

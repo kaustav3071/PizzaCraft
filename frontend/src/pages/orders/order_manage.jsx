@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import '../../styles/admin-common.css';
 import './order_manage.css';
 import { toast } from 'react-toastify';
 
@@ -28,6 +29,7 @@ const OrderManage = () => {
                 if (response.status === 401) {
                     toast.error('Session expired. Please log in again.');
                     localStorage.removeItem('token');
+                    localStorage.removeItem('userRole');
                     window.location.href = '/login';
                     return;
                 }
@@ -46,8 +48,6 @@ const OrderManage = () => {
     };
     const updateOrderStatus = async (orderId, status) => {
         try {
-            console.log('Updating order ID:', orderId); // Debugging
-            console.log('New status:', status); // Debugging
             const token = localStorage.getItem('token');
             if (!token) {
                 toast.error('Authorization token is missing. Please log in again.');
@@ -69,7 +69,7 @@ const OrderManage = () => {
             }
 
             toast.success('Order status updated successfully.');
-            fetchOrders(); // Refresh the orders list
+            fetchOrders();
         } catch (err) {
             console.error('Error updating order status:', err.message);
             toast.error(err.message);
@@ -77,8 +77,9 @@ const OrderManage = () => {
     };
 
     const deleteOrder = async (orderId) => {
+        if (!window.confirm('Are you sure you want to delete this order?')) return;
+        
         try {
-            console.log('Deleting order ID:', orderId); // Debugging
             const token = localStorage.getItem('token');
             if (!token) {
                 toast.error('Authorization token is missing. Please log in again.');
@@ -99,7 +100,7 @@ const OrderManage = () => {
             }
 
             toast.success('Order deleted successfully.');
-            fetchOrders(); // Refresh the orders list
+            fetchOrders();
         } catch (err) {
             console.error('Error deleting order:', err.message);
             toast.error(err.message);
@@ -110,65 +111,141 @@ const OrderManage = () => {
         fetchOrders();
     }, []);
 
+    const getStatusBadge = (status) => {
+        const statusMap = {
+            "Order Received": { class: "admin-badge--primary", icon: "📥" },
+            "In the Kitchen": { class: "admin-badge--warning", icon: "👨‍🍳" },
+            "Sent to Delivery": { class: "admin-badge--primary", icon: "🚚" },
+            "Delivered": { class: "admin-badge--success", icon: "✅" }
+        };
+        return statusMap[status] || statusMap["Order Received"];
+    };
+
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="admin-page">
+                <div className="admin-loading">
+                    <div className="admin-loading__spinner"></div>
+                    <p>Loading orders...</p>
+                </div>
+            </div>
+        );
     }
+
     if (error) {
-        return <div>Error: {error}</div>;
+        return (
+            <div className="admin-page">
+                <div className="admin-empty">
+                    <div className="admin-empty__icon">❌</div>
+                    <h3 className="admin-empty__title">Error Loading Orders</h3>
+                    <p className="admin-empty__desc">{error}</p>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="order-manage-container">
-            <h1>Order Management</h1>
-            <table className="order-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>User Info</th>
-                        <th>Items</th>
-                        <th>Total Price</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {orders.map((order) => (
-                        <tr key={order._id}>
-                            <td>{order._id}</td>
-                            <td>
-                                <div>Name: {order.userId.name}</div>
-                                <div>Email: {order.userId.email}</div>
-                            </td>
-                            <td>
-                                <div>Base: {order.base}</div>
-                                <div>Sauce: {order.sauce}</div>
-                                <div>Cheese: {order.cheese}</div>
-                                <div>Veggies: {order.veggies.join(', ') || 'None'}</div>
-                                {order.pizzaId && (
-                                    <div>
-                                        Pizza: {order.pizzaId.name} - Rs {order.pizzaId.price}
-                                    </div>
-                                )}
-                            </td>
-                            <td>Rs {(order.totalAmount / 100).toFixed(2)}</td>
-                            <td>
-                                <select
-                                    value={order.status}
-                                    onChange={(e) => updateOrderStatus(order._id, e.target.value)}
-                                >
-                                    <option value="Order Received">Order Received</option>
-                                    <option value="In the Kitchen">In the Kitchen</option>
-                                    <option value="Sent to Delivery">Sent to Delivery</option>
-                                    <option value="Delivered">Delivered</option>
-                                </select>
-                            </td>
-                            <td className="action-buttons">
-                                <button onClick={() => deleteOrder(order._id)}>Delete</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+        <div className="admin-page">
+            <div className="admin-page__container">
+                {/* Header */}
+                <div className="admin-page__header">
+                    <div className="admin-page__header-content">
+                        <div className="admin-page__title-section">
+                            <div className="admin-page__icon">📦</div>
+                            <div>
+                                <h1 className="admin-page__title">Order Management</h1>
+                                <p className="admin-page__subtitle">Track and manage all customer orders</p>
+                            </div>
+                        </div>
+                        <div className="order-stats">
+                            <span className="order-stat">
+                                <strong>{orders.length}</strong> Total Orders
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Orders Table */}
+                {orders.length > 0 ? (
+                    <div className="admin-table-container">
+                        <table className="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {orders.map((order) => (
+                                    <tr key={order._id}>
+                                        <td>
+                                            <span className="order-id">#{order._id.slice(-8).toUpperCase()}</span>
+                                        </td>
+                                        <td>
+                                            <div className="customer-info">
+                                                <span className="customer-name">{order.userId?.name || 'Unknown'}</span>
+                                                <span className="customer-email">{order.userId?.email || 'N/A'}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="order-items">
+                                                {order.pizzaId && (
+                                                    <span className="order-item-main">🍕 {order.pizzaId.name}</span>
+                                                )}
+                                                <div className="order-item-details">
+                                                    <span>Base: {order.base || 'N/A'}</span>
+                                                    <span>Sauce: {order.sauce || 'N/A'}</span>
+                                                    <span>Cheese: {order.cheese || 'N/A'}</span>
+                                                    {order.veggies?.length > 0 && (
+                                                        <span>Veggies: {order.veggies.join(', ')}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span className="order-amount">₹{(order.totalAmount / 100).toFixed(2)}</span>
+                                        </td>
+                                        <td>
+                                            <select
+                                                className="admin-form__select admin-select order-status-select"
+                                                value={order.status || 'Order Received'}
+                                                onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                                            >
+                                                <option value="Order Received">📥 Order Received</option>
+                                                <option value="In the Kitchen">👨‍🍳 In the Kitchen</option>
+                                                <option value="Sent to Delivery">🚚 Sent to Delivery</option>
+                                                <option value="Delivered">✅ Delivered</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div className="admin-table__actions">
+                                                <button 
+                                                    className="admin-btn admin-btn--danger admin-btn--sm"
+                                                    onClick={() => deleteOrder(order._id)}
+                                                >
+                                                    🗑️ Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <div className="admin-card">
+                        <div className="admin-empty">
+                            <div className="admin-empty__icon">📦</div>
+                            <h3 className="admin-empty__title">No Orders Yet</h3>
+                            <p className="admin-empty__desc">Orders will appear here once customers start placing them.</p>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

@@ -30,8 +30,18 @@ const isAuthenticated = () => {
   return !!localStorage.getItem("token"); // Check if token exists
 };
 
+const isAdmin = () => {
+  return localStorage.getItem("userRole") === "admin"; // Check if user has admin role
+};
+
 const ProtectedRoute = ({ children }) => {
-  return isAuthenticated() ? children : <Navigate to="/admin_login" />;
+  if (!isAuthenticated()) {
+    return <Navigate to="/admin_login" />;
+  }
+  if (!isAdmin()) {
+    return <Navigate to="/" />; // Redirect non-admin users to home
+  }
+  return children;
 };
 
 const UserProtectedRoute = ({ children }) => {

@@ -1,15 +1,17 @@
 import React from "react";
 import Header from "../../components/Header/Header";
 import About from "../../components/About/about";
-import Footer from "../../components/Footer/Footer";
+import Features from "../../components/Features/Features";
 import AppDownload from "../../components/AppDownload/AppDownload";
+import "./home.css";
 
 const Home = () => {
     return (
         <div className="home">
-            <Header/>
-            <About/>
-            <AppDownload/>
+            <Header />
+            <About />
+            <Features />
+            <AppDownload />
         </div>
     );
 }

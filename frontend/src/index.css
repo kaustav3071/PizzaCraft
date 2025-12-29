@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 
-*{
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -8,22 +8,42 @@
   scroll-behavior: smooth;
 }
 
-body{
-  min-height: 100vh;
-  background-color: #fcfcfc;
+/* Hide scrollbar but keep functionality */
+html {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 }
 
-a{
+html::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+body {
+  min-height: 100vh;
+  background-color: #fcfcfc;
+  overflow-x: hidden;
+}
+
+a {
   text-decoration: none;
   color: inherit;
 }
 
-hr{
+hr {
   border: none;
-  background-color: #a9a9a9;
-  height: 1px;
+  background-color: transparent;
+  height: 0;
+  margin: 0;
 }
 
-.app-content{
-  display: flex
+.app-content {
+  display: flex;
+}
+
+/* Toast notifications above navbar */
+.Toastify__toast-container {
+  z-index: 99999 !important;
 }

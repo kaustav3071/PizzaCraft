@@ -2,80 +2,111 @@ import React, { useState, useEffect } from "react";
 import "./user_navbar.css";
 import logo from "../../assets/logo.png";
 import { assets } from "../../assets/assets";
+import { Link, useLocation } from "react-router-dom";
 
 const UserNavbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const checkLoginStatus = () => {
       const token = localStorage.getItem("token");
-      const name = localStorage.getItem("name");
-      const email = localStorage.getItem("email");
-      const userId = localStorage.getItem("user._id"); // Get userId from localStorage
-      const cart = localStorage.getItem("cart"); // Get cart from localStorage
-      console.log("Token:", token); // Debugging
       setIsLoggedIn(!!token);
     };
 
     checkLoginStatus();
+
     window.addEventListener("storage", checkLoginStatus);
+
+    window.addEventListener("authChange", checkLoginStatus);
 
     return () => {
       window.removeEventListener("storage", checkLoginStatus);
+      window.removeEventListener("authChange", checkLoginStatus);
     };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("name"); // Remove name from localStorage
-    localStorage.removeItem("email"); // Remove email from localStorage
-    localStorage.removeItem("cart"); // Clear cart from localStorage
-    localStorage.removeItem("user._id"); // Remove userId from localStorage
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("name");
+    localStorage.removeItem("email");
+    localStorage.removeItem("cart");
+    localStorage.removeItem("user._id");
     setIsLoggedIn(false);
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new Event("authChange"));
     window.location.href = "/";
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <nav className="user-navbar">
-      <div className="user-navbar__container">
-        <div className="user-navbar__logo">
-          <img src={logo} alt="Website Logo" />
+    <nav className={`navbar ${isScrolled ? "navbar--scrolled" : ""}`}>
+      <div className="navbar__container">
+        <Link to="/" className="navbar__logo">
+          <img src={logo} alt="PizzaCraft Logo" />
           <span>PizzaCraft</span>
-        </div>
-        <div className="user-navbar__links">
-          <a href="/">Home</a>
-          <a href="/contact">Contact</a>
-          <a href="/order">Orders</a>
-          <a href="/menu">Menu</a>
-          <a href="#app-download-container">Download App</a>
-          <p></p>
-          {isLoggedIn ? (
-            <><a href="#" onClick={handleLogout}>
-              Logout
-            </a><a href="/profile">
-                <img
-                  src={assets.profile}
-                  alt="User Icon"
-                  className="user-icon" 
-                  style ={{ width: "30px", height: "30px" }}
-                  />
-              </a></>
-  
-          ) : (
-            <>
-              <a href="/register">Register</a>
-              <a href="/login">Login</a>
-            </>
-          )}
-          <div className="user-navbar__cart-icon">
-            <a href="/cart">
-              <img
-                src={assets.shopping_cart}
-                alt="Shopping Cart"
-                className="shopping-cart-icon"
-              />
-              <div className="dot"></div>
-            </a>
+        </Link>
+
+        <button
+          className={`navbar__hamburger ${isMenuOpen ? "active" : ""}`}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div className={`navbar__menu ${isMenuOpen ? "active" : ""}`}>
+          <div className="navbar__links">
+            <Link to="/" className={isActive("/") ? "active" : ""}>Home</Link>
+            <Link to="/menu" className={isActive("/menu") ? "active" : ""}>Menu</Link>
+            <Link to="/order" className={isActive("/order") ? "active" : ""}>Orders</Link>
+            <Link to="/contact" className={isActive("/contact") ? "active" : ""}>Contact</Link>
+            <a href="#app-download-container">App</a>
+          </div>
+
+          <div className="navbar__actions">
+            {isLoggedIn ? (
+              <>
+                <button onClick={handleLogout} className="navbar__btn navbar__btn--ghost">
+                  Logout
+                </button>
+                <Link to="/profile" className="navbar__profile">
+                  <img src={assets.profile} alt="Profile" />
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="navbar__btn navbar__btn--ghost">
+                  Login
+                </Link>
+                <Link to="/register" className="navbar__btn navbar__btn--primary">
+                  Sign Up
+                </Link>
+              </>
+            )}
+            <Link to="/cart" className="navbar__cart">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              <span className="navbar__cart-dot"></span>
+            </Link>
           </div>
         </div>
       </div>
