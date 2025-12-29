@@ -4,66 +4,63 @@ PizzaCraft is a full-stack web application for managing a pizza ordering system.
 
 ---
 
-## Features
+## ✨ Features
 
-### Customer Features:
-- **Explore Menu**: Browse a variety of pizzas with customization options.
-- **Customize Pizzas**: Choose base, sauce, cheese, and veggies for your pizza.
-- **Cart Management**: Add, update, or remove pizzas from the cart.
-- **Order Placement**: Place orders with Razorpay payment integration.
-- **User Authentication**: Register, log in, and manage your profile.
-- **Order Tracking**: Track the status of your order (Order Received, In the Kitchen, Sent to Delivery).
+### 👤 Customer Features:
+- 🍽️ **Explore Menu**: Browse a variety of pizzas with customization options.
+- 🎨 **Customize Pizzas**: Choose base, sauce, cheese, and veggies for your pizza.
+- 🛒 **Cart Management**: Add, update, or remove pizzas from the cart.
+- 💳 **Order Placement**: Place orders with Razorpay payment integration.
+- 🔐 **User Authentication**: Register, log in, and manage your profile.
+- 📦 **Order Tracking**: Track the status of your order (Order Received, In the Kitchen, Sent to Delivery).
 
-### Admin Features:
-- **Inventory Management**: Add, update, and manage inventory items (bases, sauces, cheeses, veggies, meat).
-- **Order Management**: View, update, and change order statuses.
-- **User Management**: Manage user accounts and roles.
-- **Low Stock Alerts**: Receive email notifications when any inventory item goes below a threshold value.
-- **Status Notifications**: Update pizza order statuses and sync them with customer dashboards.
-
----
-
-## Tech Stack
-
-### Frontend:
-- **React**: For building the user interface.
-- **Vite**: For fast development and build processes.
-- **React Router**: For navigation and routing.
-- **Axios**: For making HTTP requests.
-- **React Toastify**: For notifications.
-
-### Backend:
-- **Node.js**: For server-side logic.
-- **Express.js**: For building RESTful APIs.
-- **MongoDB**: For database management.
-- **Mongoose**: For MongoDB object modeling.
-- **Razorpay**: For payment integration.
-- **Nodemailer**: For sending email notifications.
+### 🔧 Admin Features:
+- 📊 **Inventory Management**: Add, update, and manage inventory items (bases, sauces, cheeses, veggies, meat).
+- 📋 **Order Management**: View, update, and change order statuses.
+- 👥 **User Management**: Manage user accounts and roles.
+- ⚠️ **Low Stock Alerts**: Receive email notifications when any inventory item goes below a threshold value.
+- 🔔 **Status Notifications**: Update pizza order statuses and sync them with customer dashboards.
 
 ---
 
-## Deployment
+## 🛠️ Tech Stack
 
-Both the frontend and backend are deployed on **Render**.
+### 🎨 Frontend:
+- ⚛️ **React**: For building the user interface.
+- ⚡ **Vite**: For fast development and build processes.
+- 🧭 **React Router**: For navigation and routing.
+- 🌐 **Axios**: For making HTTP requests.
+- 🔔 **React Toastify**: For notifications.
 
-- **Frontend**: [https://pizzacraft-frontend.onrender.com/](https://pizzacraft-frontend.onrender.com/)
-- **Backend**: Hosted on Render and connected to the frontend.
-
-Visit my website: [https://pizzacraft-frontend.onrender.com/](https://pizzacraft-frontend.onrender.com/)
-
----
-
-## Installation
-
-### Prerequisites:
-- Node.js and npm installed.
-- MongoDB Atlas account.
-- Razorpay account for test mode.
-- Email account (e.g., Gmail) for notifications.
+### ⚙️ Backend:
+- 💚 **Node.js**: For server-side logic.
+- 🚀 **Express.js**: For building RESTful APIs.
+- 🍃 **MongoDB**: For database management.
+- 📦 **Mongoose**: For MongoDB object modeling.
+- 💰 **Razorpay**: For payment integration.
+- 📧 **Nodemailer**: For sending email notifications.
 
 ---
 
-## Backend Setup
+## 🚀 Deployment
+
+Deployed on **Vercel**.
+
+🌐 **Visit the live website**: [https://thepizzacraft.vercel.app](https://thepizzacraft.vercel.app)
+
+---
+
+## 📥 Installation
+
+### 📋 Prerequisites:
+- ✅ Node.js and npm installed.
+- ✅ MongoDB Atlas account.
+- ✅ Razorpay account for test mode.
+- ✅ Email account (e.g., Gmail) for notifications.
+
+---
+
+## ⚙️ Backend Setup
 
 ```bash
 # Navigate to backend directory
@@ -73,7 +70,7 @@ cd backend
 npm install
 ```
 
-### Create a .env file in the backend directory with the following variables:
+### 🔑 Create a .env file in the backend directory with the following variables:
 - PORT=4000
 - MONGODB_URI=your_mongodb_uri
 - RAZORPAY_KEY_ID=your_razorpay_key_id
@@ -86,7 +83,7 @@ npm install
 npm start
 ```
 
-## Frontend Setup
+## 🎨 Frontend Setup
 ```bash
 # Navigate to frontend directory
 cd frontend
@@ -98,9 +95,9 @@ npm install
 npm run dev
 ```
 
-- Open http://localhost:5173 in your browser to access the application.
+- 🌐 Open http://localhost:5173 in your browser to access the application.
 
-## Project Structure
+## 📁 Project Structure
 ```bash
 PizzaCraft/
 ├── backend/
@@ -122,15 +119,15 @@ PizzaCraft/
 ├── images/
 └── README.md 
 ```
-## Usage
+## 📖 Usage
 
-- Customer: Register, verify email, login, explore menu, customize pizza, pay with Razorpay, track order status.
+- 👤 **Customer**: Register, verify email, login, explore menu, customize pizza, pay with Razorpay, track order status.
 
-- Admin: Login, manage inventory, monitor stock levels, update order statuses, receive low stock notifications.
+- 🔧 **Admin**: Login, manage inventory, monitor stock levels, update order statuses, receive low stock notifications.
 
-## Screenshots
+## 📸 Screenshots
 
-### User Section
+### 👤 User Section
 ![](/images/user_dashbard.png)
 ![](/images/contact_us.png)
 ![](/images/menu%20.png)
@@ -139,7 +136,7 @@ PizzaCraft/
 ![](/images/cart.png)
 ![](/images/razorpay.png)
 
-### Admin Section
+### 🔧 Admin Section
 ![](/images/admin_login.png)
 ![](/images/admi-dashboard.png)
 ![](/images/order.png)
@@ -148,13 +145,13 @@ PizzaCraft/
 ![](/images/notification.png)
 
 
-## Contributing
-- Contributions are welcome!
+## 🤝 Contributing
+Contributions are welcome! 🎉
 Feel free to fork the repository and create a pull request.
 
-## License
+## 📄 License
 This project is licensed under the MIT License.
 
 
-## Author
-Built with ❤️ by Kaustav Das
+## 👨‍💻 Author
+Built with ❤️ by **Kaustav Das**
