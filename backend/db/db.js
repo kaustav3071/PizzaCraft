@@ -1,13 +1,25 @@
-import { connect } from 'mongoose';
+import mongoose from 'mongoose';
 
+let isConnected = false;
 
 async function connectDB() {
+    if (isConnected) {
+        console.log("✅ Using existing database connection");
+        return;
+    }
+
+    if (!process.env.MONGO_CONNECTION_URL) {
+        console.error("❌ MONGO_CONNECTION_URL is not defined in environment variables");
+        throw new Error("MONGO_CONNECTION_URL is not defined");
+    }
+
     try {
-        await connect(process.env.MONGO_CONNECTION_URL);
+        await mongoose.connect(process.env.MONGO_CONNECTION_URL);
+        isConnected = mongoose.connection.readyState === 1;
         console.log("✅ Database connected successfully 🚀🚀🚀");
     } catch (err) {
         console.error("❌ Database connection failed:", err.message);
-        process.exit(1); // Exit process if connection fails
+        throw err; // Don't exit, just throw for serverless
     }
 }
 

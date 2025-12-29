@@ -13,7 +13,9 @@ import contactRouter from './routes/contact.routes.js';
 import RazorpayRouter from './routes/razorpay.route.js';
 
 app.use(cookieParser());
-connectDB();
+
+// Connect to database (don't exit on failure for serverless)
+connectDB().catch(err => console.error('DB Connection Error:', err));
 
 // CORS configuration - allow all origins for Vercel deployment
 app.use(cors({
@@ -22,9 +24,6 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
-
-// Handle preflight requests
-app.options('*', cors());
 
 app.use(json());
 app.use(urlencoded({ extended: true }));
