@@ -15,25 +15,12 @@ import RazorpayRouter from './routes/razorpay.route.js';
 app.use(cookieParser());
 connectDB();
 
-// CORS configuration - add your Vercel frontend URL
-const allowedOrigins = [
-  process.env.FRONTEND_URL
-].filter(Boolean);
-
+// CORS configuration - allow all origins for Vercel deployment
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    // For development, you can temporarily allow all origins
-    console.log('Blocked origin:', origin);
-    return callback(null, true); // Allow all for now
-  },
+  origin: true, // Allow all origins
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 // Handle preflight requests
