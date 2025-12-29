@@ -49,18 +49,6 @@ app.get('/', (req, res) => {
   res.send('PizzaCraft Backend is Running!');
 });
 
-// Health check endpoint for debugging
-app.get('/health', async (req, res) => {
-  const mongoose = (await import('mongoose')).default;
-  res.json({
-    status: 'ok',
-    dbState: mongoose.connection.readyState,
-    dbStateText: ['disconnected', 'connected', 'connecting', 'disconnecting'][mongoose.connection.readyState] || 'unknown',
-    mongoUrlSet: !!process.env.MONGO_CONNECTION_URL,
-    mongoUrlLength: process.env.MONGO_CONNECTION_URL?.length || 0,
-    env: process.env.NODE_ENV || 'not set'
-  });
-});
 
 export default app;
 
