@@ -245,7 +245,7 @@ const AddInventory = () => {
                         <h2>{pizza.pizzaName}</h2>
                         <div className="pizza-details">
                             <img
-                                src={`${url}/images/${pizza.pizzaImage}`}
+                                src={pizza.pizzaImage?.startsWith('http') ? pizza.pizzaImage : `${url}/images/${pizza.pizzaImage}`}
                                 alt={pizza.pizzaName}
                                 className="pizza-image"
                             />

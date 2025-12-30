@@ -171,7 +171,10 @@ const ExploreMenu = () => {
                         {getAll.map((pizza) => (
                             <div className="pizza-card" key={pizza._id}>
                                 <div className="pizza-card-image">
-                                    <img src={`${url}/images/${pizza.image}`} alt={pizza.name} />
+                                    <img 
+                                        src={pizza.image?.startsWith('http') ? pizza.image : `${url}/images/${pizza.image}`} 
+                                        alt={pizza.name} 
+                                    />
                                     <div className="pizza-card-overlay">
                                         <span className="pizza-tag">🔥 Popular</span>
                                     </div>

@@ -57,7 +57,10 @@ const GetAll = () => {
                 {getAll.length > 0 ? (
                     getAll.map((pizza) => (
                         <div key={pizza._id} className="pizza-card">
-                            <img src={`${url}/images/${pizza.image}`} alt={pizza.name} />
+                            <img 
+                                src={pizza.image?.startsWith('http') ? pizza.image : `${url}/images/${pizza.image}`} 
+                                alt={pizza.name} 
+                            />
                             <h2>{pizza.name}</h2>
                             <p>{pizza.description}</p>
                             <p>Price: ₹{pizza.price}</p>

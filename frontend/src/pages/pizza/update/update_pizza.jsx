@@ -86,7 +86,9 @@ const UpdatePizza = () => {
                             src={
                                 image
                                     ? URL.createObjectURL(image)
-                                    : `${url}/images/${currentImage}`
+                                    : currentImage?.startsWith('http') 
+                                        ? currentImage 
+                                        : `${url}/images/${currentImage}`
                             }
                             alt="Pizza Preview"
                         />

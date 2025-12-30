@@ -358,7 +358,7 @@ const Cart = () => {
                 <tr key={index}>
                   <td>
                     <img
-                      src={`${url}/images/${item.pizzaImage}`}
+                      src={item.pizzaImage?.startsWith('http') ? item.pizzaImage : `${url}/images/${item.pizzaImage}`}
                       alt={item.pizzaName}
                     />
                     {item.pizzaName}
