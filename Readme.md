@@ -39,6 +39,7 @@ PizzaCraft is a full-stack web application for managing a pizza ordering system.
 - 📦 **Mongoose**: For MongoDB object modeling.
 - 💰 **Razorpay**: For payment integration.
 - 📧 **Nodemailer**: For sending email notifications.
+- ☁️ **Cloudinary**: For image storage and management.
 
 ---
 
@@ -55,6 +56,7 @@ Deployed on **Vercel**.
 ### 📋 Prerequisites:
 - ✅ Node.js and npm installed.
 - ✅ MongoDB Atlas account.
+- ✅ Cloudinary account (free tier available).
 - ✅ Razorpay account for test mode.
 - ✅ Email account (e.g., Gmail) for notifications.
 
@@ -71,12 +73,21 @@ npm install
 ```
 
 ### 🔑 Create a .env file in the backend directory with the following variables:
-- PORT=4000
-- MONGODB_URI=your_mongodb_uri
-- RAZORPAY_KEY_ID=your_razorpay_key_id
-- RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-- EMAIL_USER=your_email@example.com
-- EMAIL_PASS=your_email_password_or_app_password
+
+```env
+PORT=4000
+MONGO_CONNECTION_URL=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+EMAIL_USER=your_email@example.com
+EMAIL_PASS=your_email_password_or_app_password
+BACKEND_URL=http://localhost:4000
+FRONTEND_URL=http://localhost:5173
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+```
 
 ```bash
 # Start backend server
@@ -90,7 +101,15 @@ cd frontend
 
 # Install dependencies
 npm install
+```
 
+### 🔑 Create a .env file in the frontend directory:
+
+```env
+VITE_API_URL=http://localhost:4000
+```
+
+```bash
 # Start the frontend development server
 npm run dev
 ```
@@ -124,26 +143,6 @@ PizzaCraft/
 - 👤 **Customer**: Register, verify email, login, explore menu, customize pizza, pay with Razorpay, track order status.
 
 - 🔧 **Admin**: Login, manage inventory, monitor stock levels, update order statuses, receive low stock notifications.
-
-## 📸 Screenshots
-
-### 👤 User Section
-![](/images/user_dashbard.png)
-![](/images/contact_us.png)
-![](/images/menu%20.png)
-![](/images/user_profile.png)
-![](/images/my_order.png)
-![](/images/cart.png)
-![](/images/razorpay.png)
-
-### 🔧 Admin Section
-![](/images/admin_login.png)
-![](/images/admi-dashboard.png)
-![](/images/order.png)
-![](/images/manage-pizza.png)
-![](/images/add-pizza.png)
-![](/images/notification.png)
-
 
 ## 🤝 Contributing
 Contributions are welcome! 🎉
